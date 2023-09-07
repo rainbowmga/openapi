@@ -1,0 +1,888 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Rainbow Open API is currently in preview for selected insurance partners.",
+        "title": "Rainbow API",
+        "contact": {
+            "name": "API Support",
+            "email": "support@userainbow.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "api.demo.userainbow.com",
+    "basePath": "/partner/api/v1",
+    "paths": {
+        "/appetite": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuthV1": []
+                    }
+                ],
+                "description": "The endpoint enables you to query insurance appetites based on given state and class codes.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Appetite"
+                ],
+                "summary": "Query Appetite",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Comma-separated list of state codes.",
+                        "name": "state_codes",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Comma-separated list of NAICS class codes.",
+                        "name": "class_codes",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "If set to true, the response will include related questions for the queried appetites.",
+                        "name": "include_questions",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.AppetiteResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuthV1": []
+                    }
+                ],
+                "description": "Returns status 200 if the service is healthy.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Health Check"
+                ],
+                "summary": "Check health of the partner API service",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/indication": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuthV1": []
+                    }
+                ],
+                "description": "Use the endpoint to create a quote indication based on submitted answers.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Indication"
+                ],
+                "summary": "Create Indication",
+                "parameters": [
+                    {
+                        "description": "Create Application Request",
+                        "name": "request_body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateQuoteIndicationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.QuoteIndicationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/indication/id/{IndicationID}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuthV1": []
+                    }
+                ],
+                "description": "Use the endpoint to fetch the created quote indication based on an Indication ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Indication"
+                ],
+                "summary": "Query Indication by Indication ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The Indication ID, returned by the create indication endpoint.",
+                        "name": "IndicationID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.QuoteIndicationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sub-agency": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuthV1": []
+                    }
+                ],
+                "description": "Use the endpoint to register a new sub-agency.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Agency"
+                ],
+                "summary": "Create Sub Agency",
+                "parameters": [
+                    {
+                        "description": "Agency Create Request",
+                        "name": "request_body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AgencyCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.AgencyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sub-agency/id/{SubAgencyID}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuthV1": []
+                    }
+                ],
+                "description": "The endpoint fetches a sub-agency’s information based on its unique ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Agency"
+                ],
+                "summary": "Query Sub Agency by SubAgency ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The UUID of the Sub-Agency.",
+                        "name": "SubAgencyID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.AgencyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sub-agency/npn/{NPN}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuthV1": []
+                    }
+                ],
+                "description": "Use the endpoint to fetch details about a sub-agency via its unique National Producer Number (NPN).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Agency"
+                ],
+                "summary": "Query Sub Agency by NPN",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The sub-agency’s National Producer Number.",
+                        "name": "NPN",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.AgencyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.AddressInfo": {
+            "type": "object",
+            "properties": {
+                "address1": {
+                    "type": "string"
+                },
+                "address2": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "zip": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AgencyCreateRequest": {
+            "type": "object",
+            "properties": {
+                "appointment_token": {
+                    "description": "A unique token the sub-agency can retrieve from their settings page. Providing this empowers the API user to create quote indications under the sub-agency’s identity.\nRequired: true\nExample: \"018a056a-0eda-9157-6cb4-d10642b95796\"",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Identifying name of the Sub-Agency.\nRequired: true\nExample: \"Sub Agency 101\"",
+                    "type": "string"
+                },
+                "npn": {
+                    "description": "National Producer Number unique to the Sub-Agency.\nRequired: true\nExample: \"123456\"",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AgencyResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.AgencyResponseData"
+                },
+                "errors": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AgencyResponseData": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "Timestamp marking the creation of the sub-agency.\nRequired: true\nExample: \"2023-08-28T01:42:08Z\"",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "The name of the sub-agency.\nRequired: true\nExample: \"Sub Agency 101\"",
+                    "type": "string"
+                },
+                "npn": {
+                    "description": "The Sub-Agency’s National Producer Number.\nRequired: true\nExample: \"123456\"",
+                    "type": "string"
+                },
+                "sub_agency_id": {
+                    "description": "The UUID of the queried sub-agency.\nRequired: true\nExample: \"018a056a-0eda-9157-6cb4-d10642b95796\"",
+                    "type": "string"
+                },
+                "use_sub_agency_appointment": {
+                    "description": "Specifies if quotes created via API, associated with this sub-agency ID, will be assigned to the queried sub-agency.\nRequired: true\nExample: false",
+                    "type": "boolean"
+                }
+            }
+        },
+        "model.AllPerilsDeductibleOptions": {
+            "type": "string",
+            "enum": [
+                "$500",
+                "$1,000",
+                "$2,500",
+                "$5,000",
+                "$10,000",
+                "$25,000"
+            ],
+            "x-enum-varnames": [
+                "AllPerilsDeductibleOption500",
+                "AllPerilsDeductibleOption1000",
+                "AllPerilsDeductibleOption2500",
+                "AllPerilsDeductibleOption5000",
+                "AllPerilsDeductibleOption10000",
+                "AllPerilsDeductibleOption25000"
+            ]
+        },
+        "model.AppetiteResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AppetiteResponseData"
+                    }
+                },
+                "errors": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AppetiteResponseData": {
+            "type": "object",
+            "properties": {
+                "available": {
+                    "description": "Indicates the availability of a product within the queried appetite.",
+                    "type": "boolean"
+                },
+                "class_code": {
+                    "description": "Reflects the NAICS class code used in the query.",
+                    "type": "string"
+                },
+                "product_code": {
+                    "description": "Code representing the insurance product linked to the queried appetite.",
+                    "type": "string"
+                },
+                "questions": {
+                    "description": "A list of questions related to the queried appetite. These are included when include_questions is set to true.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/monolith_endpoint_partner_model.Question"
+                    }
+                },
+                "state_code": {
+                    "description": "Echoes the state code used in the query.",
+                    "type": "string"
+                }
+            }
+        },
+        "model.CoverageRequest": {
+            "type": "object",
+            "properties": {
+                "all_perils_deductible": {
+                    "$ref": "#/definitions/model.AllPerilsDeductibleOptions"
+                },
+                "building_limit": {
+                    "type": "integer"
+                },
+                "business_personal_property_limit": {
+                    "type": "integer"
+                },
+                "general_liability_limit": {
+                    "$ref": "#/definitions/model.GeneralLiabilityLimitOptions"
+                },
+                "tenants_improvements_betterments_limit": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.CoverageResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CoverageValue"
+                    }
+                }
+            }
+        },
+        "model.CoverageValue": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CreateQuoteIndicationRequest": {
+            "type": "object",
+            "properties": {
+                "agent": {
+                    "description": "An object contains agent information",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.IndicationAgent"
+                        }
+                    ]
+                },
+                "answers": {
+                    "description": "An array of objects, where each object represents an answer to a question from the appetite endpoint.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/monolith_endpoint_partner_model.Answer"
+                    }
+                },
+                "business": {
+                    "description": "An object contains business information about the insured business.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.IndicationBusiness"
+                        }
+                    ]
+                },
+                "contact": {
+                    "description": "Personal information about the applicant.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.IndicationContact"
+                        }
+                    ]
+                },
+                "coverage": {
+                    "description": "An object contains coverage information",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CoverageRequest"
+                        }
+                    ]
+                },
+                "policy_effective_date": {
+                    "description": "The effective date for the policy",
+                    "type": "string"
+                },
+                "product_code": {
+                    "description": "Code representing the insurance product linked to the queried appetite.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.ProductCode"
+                        }
+                    ]
+                },
+                "sub_agency_id": {
+                    "description": "Optional, identifier of the sub-agency, if provided, the indication will be attributed to the sub-agency.",
+                    "type": "string"
+                }
+            }
+        },
+        "model.GeneralLiabilityLimitOptions": {
+            "type": "string",
+            "enum": [
+                "$500,000 / $1,000,000",
+                "$1,000,000 / $2,000,000",
+                "$2,000,000 / $4,000,000"
+            ],
+            "x-enum-varnames": [
+                "GeneralLiabilityLimitOption500K",
+                "GeneralLiabilityLimitOption1M",
+                "GeneralLiabilityLimitOption2M"
+            ]
+        },
+        "model.IndicationAgent": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.IndicationBusiness": {
+            "type": "object",
+            "properties": {
+                "business_addresses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AddressInfo"
+                    }
+                },
+                "business_dba": {
+                    "type": "string"
+                },
+                "business_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.IndicationContact": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "mailing_address": {
+                    "$ref": "#/definitions/model.AddressInfo"
+                }
+            }
+        },
+        "model.LineItem": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProductCode": {
+            "type": "string",
+            "enum": [
+                "bop_v1_indication"
+            ],
+            "x-enum-varnames": [
+                "ProductCodeBOPIndication"
+            ]
+        },
+        "model.QuoteIndicationResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.QuoteIndicationResponseData"
+                },
+                "errors": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.QuoteIndicationResponseData": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "This object contains information about the business associated with the application.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.IndicationBusiness"
+                        }
+                    ]
+                },
+                "contact": {
+                    "description": "This object contains personal information about the applicant.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.IndicationContact"
+                        }
+                    ]
+                },
+                "indication_id": {
+                    "description": "The Indication identifier.",
+                    "type": "string"
+                },
+                "product_code": {
+                    "description": "Code representing the insurance product linked to the queried appetite.",
+                    "type": "string"
+                },
+                "quote": {
+                    "description": "The quote object contains information about the generated quote.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/monolith_endpoint_partner_model.Quote"
+                        }
+                    ]
+                },
+                "status": {
+                    "description": "Indicates the status of the indication (quote, declination).",
+                    "type": "string"
+                },
+                "status_messages": {
+                    "description": "Any messages related to the status.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "model.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "errors": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.URLInfo": {
+            "type": "object",
+            "properties": {
+                "expires_at": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "monolith_endpoint_partner_model.Answer": {
+            "type": "object",
+            "properties": {
+                "boolean": {
+                    "type": "boolean"
+                },
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "question_key": {
+                    "type": "string"
+                },
+                "string": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
+        "monolith_endpoint_partner_model.Question": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "description": "Identifier for the question.",
+                    "type": "string"
+                },
+                "options": {
+                    "description": "Values representing the answer options, if applicable.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "prompt": {
+                    "description": "The question text.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "The data type of the answer (can be “string”, “number”, “boolean”, “time”, “list”).",
+                    "type": "string"
+                }
+            }
+        },
+        "monolith_endpoint_partner_model.Quote": {
+            "type": "object",
+            "properties": {
+                "application_url": {
+                    "description": "The URL to complete the application.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.URLInfo"
+                        }
+                    ]
+                },
+                "coverages": {
+                    "description": "The coverages of the quote, which contains the liability limits or property limits",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CoverageResponse"
+                    }
+                },
+                "line_items": {
+                    "description": "Additional line items, which contains the tax, fee, or additional discount",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.LineItem"
+                    }
+                },
+                "monthly_premium": {
+                    "description": "The monthly premium for the policy.",
+                    "type": "string"
+                },
+                "premium": {
+                    "description": "The total premium for the policy.",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuthV1": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
