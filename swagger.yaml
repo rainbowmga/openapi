@@ -1,0 +1,618 @@
+basePath: /partner/api/v1
+definitions:
+  model.AddressInfo:
+    properties:
+      address1:
+        type: string
+      address2:
+        type: string
+      city:
+        type: string
+      state:
+        type: string
+      zip:
+        type: string
+    type: object
+  model.AgencyCreateRequest:
+    properties:
+      appointment_token:
+        description: |-
+          A unique token the sub-agency can retrieve from their settings page. Providing this empowers the API user to create quote indications under the sub-agency’s identity.
+          Required: true
+          Example: "018a056a-0eda-9157-6cb4-d10642b95796"
+        type: string
+      name:
+        description: |-
+          Identifying name of the Sub-Agency.
+          Required: true
+          Example: "Sub Agency 101"
+        type: string
+      npn:
+        description: |-
+          National Producer Number unique to the Sub-Agency.
+          Required: true
+          Example: "123456"
+        type: string
+    type: object
+  model.AgencyResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.AgencyResponseData'
+      errors: {}
+      message:
+        type: string
+      status:
+        type: integer
+      timestamp:
+        type: string
+    type: object
+  model.AgencyResponseData:
+    properties:
+      created_at:
+        description: |-
+          Timestamp marking the creation of the sub-agency.
+          Required: true
+          Example: "2023-08-28T01:42:08Z"
+        type: string
+      name:
+        description: |-
+          The name of the sub-agency.
+          Required: true
+          Example: "Sub Agency 101"
+        type: string
+      npn:
+        description: |-
+          The Sub-Agency’s National Producer Number.
+          Required: true
+          Example: "123456"
+        type: string
+      sub_agency_id:
+        description: |-
+          The UUID of the queried sub-agency.
+          Required: true
+          Example: "018a056a-0eda-9157-6cb4-d10642b95796"
+        type: string
+      use_sub_agency_appointment:
+        description: |-
+          Specifies if quotes created via API, associated with this sub-agency ID, will be assigned to the queried sub-agency.
+          Required: true
+          Example: false
+        type: boolean
+    type: object
+  model.AllPerilsDeductibleOptions:
+    enum:
+    - $500
+    - $1,000
+    - $2,500
+    - $5,000
+    - $10,000
+    - $25,000
+    type: string
+    x-enum-varnames:
+    - AllPerilsDeductibleOption500
+    - AllPerilsDeductibleOption1000
+    - AllPerilsDeductibleOption2500
+    - AllPerilsDeductibleOption5000
+    - AllPerilsDeductibleOption10000
+    - AllPerilsDeductibleOption25000
+  model.AppetiteResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.AppetiteResponseData'
+        type: array
+      errors: {}
+      message:
+        type: string
+      status:
+        type: integer
+      timestamp:
+        type: string
+    type: object
+  model.AppetiteResponseData:
+    properties:
+      available:
+        description: Indicates the availability of a product within the queried appetite.
+        type: boolean
+      class_code:
+        description: Reflects the NAICS class code used in the query.
+        type: string
+      product_code:
+        description: Code representing the insurance product linked to the queried
+          appetite.
+        type: string
+      questions:
+        description: A list of questions related to the queried appetite. These are
+          included when include_questions is set to true.
+        items:
+          $ref: '#/definitions/monolith_endpoint_partner_model.Question'
+        type: array
+      state_code:
+        description: Echoes the state code used in the query.
+        type: string
+    type: object
+  model.CoverageRequest:
+    properties:
+      all_perils_deductible:
+        $ref: '#/definitions/model.AllPerilsDeductibleOptions'
+      building_limit:
+        type: integer
+      business_personal_property_limit:
+        type: integer
+      general_liability_limit:
+        $ref: '#/definitions/model.GeneralLiabilityLimitOptions'
+      tenants_improvements_betterments_limit:
+        type: integer
+    type: object
+  model.CoverageResponse:
+    properties:
+      description:
+        type: string
+      type:
+        type: string
+      values:
+        items:
+          $ref: '#/definitions/model.CoverageValue'
+        type: array
+    type: object
+  model.CoverageValue:
+    properties:
+      title:
+        type: string
+      value:
+        type: string
+    type: object
+  model.CreateQuoteIndicationRequest:
+    properties:
+      agent:
+        allOf:
+        - $ref: '#/definitions/model.IndicationAgent'
+        description: An object contains agent information
+      answers:
+        description: An array of objects, where each object represents an answer to
+          a question from the appetite endpoint.
+        items:
+          $ref: '#/definitions/monolith_endpoint_partner_model.Answer'
+        type: array
+      business:
+        allOf:
+        - $ref: '#/definitions/model.IndicationBusiness'
+        description: An object contains business information about the insured business.
+      contact:
+        allOf:
+        - $ref: '#/definitions/model.IndicationContact'
+        description: Personal information about the applicant.
+      coverage:
+        allOf:
+        - $ref: '#/definitions/model.CoverageRequest'
+        description: An object contains coverage information
+      policy_effective_date:
+        description: The effective date for the policy
+        type: string
+      product_code:
+        allOf:
+        - $ref: '#/definitions/model.ProductCode'
+        description: Code representing the insurance product linked to the queried
+          appetite.
+      sub_agency_id:
+        description: Optional, identifier of the sub-agency, if provided, the indication
+          will be attributed to the sub-agency.
+        type: string
+    type: object
+  model.GeneralLiabilityLimitOptions:
+    enum:
+    - $500,000 / $1,000,000
+    - $1,000,000 / $2,000,000
+    - $2,000,000 / $4,000,000
+    type: string
+    x-enum-varnames:
+    - GeneralLiabilityLimitOption500K
+    - GeneralLiabilityLimitOption1M
+    - GeneralLiabilityLimitOption2M
+  model.IndicationAgent:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+    type: object
+  model.IndicationBusiness:
+    properties:
+      business_addresses:
+        items:
+          $ref: '#/definitions/model.AddressInfo'
+        type: array
+      business_dba:
+        type: string
+      business_name:
+        type: string
+    type: object
+  model.IndicationContact:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      mailing_address:
+        $ref: '#/definitions/model.AddressInfo'
+    type: object
+  model.LineItem:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  model.ProductCode:
+    enum:
+    - bop_v1_indication
+    type: string
+    x-enum-varnames:
+    - ProductCodeBOPIndication
+  model.QuoteIndicationResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.QuoteIndicationResponseData'
+      errors: {}
+      message:
+        type: string
+      status:
+        type: integer
+      timestamp:
+        type: string
+    type: object
+  model.QuoteIndicationResponseData:
+    properties:
+      business:
+        allOf:
+        - $ref: '#/definitions/model.IndicationBusiness'
+        description: This object contains information about the business associated
+          with the application.
+      contact:
+        allOf:
+        - $ref: '#/definitions/model.IndicationContact'
+        description: This object contains personal information about the applicant.
+      indication_id:
+        description: The Indication identifier.
+        type: string
+      product_code:
+        description: Code representing the insurance product linked to the queried
+          appetite.
+        type: string
+      quote:
+        allOf:
+        - $ref: '#/definitions/monolith_endpoint_partner_model.Quote'
+        description: The quote object contains information about the generated quote.
+      status:
+        description: Indicates the status of the indication (quote, declination).
+        type: string
+      status_messages:
+        description: Any messages related to the status.
+        items:
+          type: string
+        type: array
+    type: object
+  model.Response:
+    properties:
+      data: {}
+      errors: {}
+      message:
+        type: string
+      status:
+        type: integer
+      timestamp:
+        type: string
+    type: object
+  model.URLInfo:
+    properties:
+      expires_at:
+        type: string
+      url:
+        type: string
+    type: object
+  monolith_endpoint_partner_model.Answer:
+    properties:
+      boolean:
+        type: boolean
+      list:
+        items:
+          type: string
+        type: array
+      number:
+        type: integer
+      question_key:
+        type: string
+      string:
+        type: string
+      time:
+        type: string
+    type: object
+  monolith_endpoint_partner_model.Question:
+    properties:
+      key:
+        description: Identifier for the question.
+        type: string
+      options:
+        description: Values representing the answer options, if applicable.
+        items:
+          type: string
+        type: array
+      prompt:
+        description: The question text.
+        type: string
+      type:
+        description: The data type of the answer (can be “string”, “number”, “boolean”,
+          “time”, “list”).
+        type: string
+    type: object
+  monolith_endpoint_partner_model.Quote:
+    properties:
+      application_url:
+        allOf:
+        - $ref: '#/definitions/model.URLInfo'
+        description: The URL to complete the application.
+      coverages:
+        description: The coverages of the quote, which contains the liability limits
+          or property limits
+        items:
+          $ref: '#/definitions/model.CoverageResponse'
+        type: array
+      line_items:
+        description: Additional line items, which contains the tax, fee, or additional
+          discount
+        items:
+          $ref: '#/definitions/model.LineItem'
+        type: array
+      monthly_premium:
+        description: The monthly premium for the policy.
+        type: string
+      premium:
+        description: The total premium for the policy.
+        type: string
+    type: object
+host: api.demo.userainbow.com
+info:
+  contact:
+    email: support@userainbow.com
+    name: API Support
+  description: Rainbow Open API is currently in preview for selected insurance partners.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Rainbow API
+  version: "1.0"
+paths:
+  /appetite:
+    get:
+      consumes:
+      - application/json
+      description: The endpoint enables you to query insurance appetites based on
+        given state and class codes.
+      parameters:
+      - collectionFormat: csv
+        description: Comma-separated list of state codes.
+        in: query
+        items:
+          type: string
+        name: state_codes
+        required: true
+        type: array
+      - collectionFormat: csv
+        description: Comma-separated list of NAICS class codes.
+        in: query
+        items:
+          type: string
+        name: class_codes
+        required: true
+        type: array
+      - description: If set to true, the response will include related questions for
+          the queried appetites.
+        in: query
+        name: include_questions
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AppetiteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - ApiKeyAuthV1: []
+      summary: Query Appetite
+      tags:
+      - Appetite
+  /health:
+    get:
+      description: Returns status 200 if the service is healthy.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - ApiKeyAuthV1: []
+      summary: Check health of the partner API service
+      tags:
+      - Health Check
+  /indication:
+    post:
+      consumes:
+      - application/json
+      description: Use the endpoint to create a quote indication based on submitted
+        answers.
+      parameters:
+      - description: Create Application Request
+        in: body
+        name: request_body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateQuoteIndicationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.QuoteIndicationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - ApiKeyAuthV1: []
+      summary: Create Indication
+      tags:
+      - Indication
+  /indication/id/{IndicationID}:
+    get:
+      consumes:
+      - application/json
+      description: Use the endpoint to fetch the created quote indication based on
+        an Indication ID.
+      parameters:
+      - description: The Indication ID, returned by the create indication endpoint.
+        in: path
+        name: IndicationID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.QuoteIndicationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - ApiKeyAuthV1: []
+      summary: Query Indication by Indication ID
+      tags:
+      - Indication
+  /sub-agency:
+    post:
+      consumes:
+      - application/json
+      description: Use the endpoint to register a new sub-agency.
+      parameters:
+      - description: Agency Create Request
+        in: body
+        name: request_body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AgencyCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AgencyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - ApiKeyAuthV1: []
+      summary: Create Sub Agency
+      tags:
+      - Agency
+  /sub-agency/id/{SubAgencyID}:
+    get:
+      consumes:
+      - application/json
+      description: The endpoint fetches a sub-agency’s information based on its unique
+        ID.
+      parameters:
+      - description: The UUID of the Sub-Agency.
+        in: path
+        name: SubAgencyID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AgencyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - ApiKeyAuthV1: []
+      summary: Query Sub Agency by SubAgency ID
+      tags:
+      - Agency
+  /sub-agency/npn/{NPN}:
+    get:
+      consumes:
+      - application/json
+      description: Use the endpoint to fetch details about a sub-agency via its unique
+        National Producer Number (NPN).
+      parameters:
+      - description: The sub-agency’s National Producer Number.
+        in: path
+        name: NPN
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AgencyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - ApiKeyAuthV1: []
+      summary: Query Sub Agency by NPN
+      tags:
+      - Agency
+securityDefinitions:
+  ApiKeyAuthV1:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
