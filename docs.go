@@ -504,6 +504,14 @@ const docTemplate = `{
                     "description": "Code representing the insurance product linked to the queried appetite.",
                     "type": "string"
                 },
+                "product_expiration": {
+                    "description": "String representing the expiration timestamp of the product requested",
+                    "type": "string"
+                },
+                "product_version": {
+                    "description": "String representing the version of the product requested",
+                    "type": "string"
+                },
                 "questions": {
                     "description": "A list of questions related to the queried appetite. These are included when include_questions is set to true.",
                     "type": "array",
@@ -618,6 +626,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.ProductCode"
                         }
                     ]
+                },
+                "product_version": {
+                    "description": "String representing the version of the product requested",
+                    "type": "string"
                 },
                 "sub_agency_id": {
                     "description": "Optional, identifier of the sub-agency, if provided, the indication will be attributed to the sub-agency.",
@@ -751,6 +763,10 @@ const docTemplate = `{
                     "description": "Code representing the insurance product linked to the queried appetite.",
                     "type": "string"
                 },
+                "product_version": {
+                    "description": "String representing the version of the product requested",
+                    "type": "string"
+                },
                 "quote": {
                     "description": "The quote object contains information about the generated quote.",
                     "allOf": [
@@ -828,6 +844,10 @@ const docTemplate = `{
         "monolith_endpoint_partner_model.Question": {
             "type": "object",
             "properties": {
+                "is_optional": {
+                    "description": "IsOptional question. Not required, but can be answered if applicable.",
+                    "type": "boolean"
+                },
                 "key": {
                     "description": "Identifier for the question.",
                     "type": "string"
