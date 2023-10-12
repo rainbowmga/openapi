@@ -12,15 +12,26 @@ definitions:
         type: string
       zip:
         type: string
+    required:
+    - address1
+    - city
+    - state
+    - zip
     type: object
   model.AgencyCreateRequest:
     properties:
       appointment_token:
         description: |-
           A unique token the sub-agency can retrieve from their settings page. Providing this empowers the API user to create quote indications under the sub-agency’s identity.
-          Required: true
+          Required: false
           Example: "018a056a-0eda-9157-6cb4-d10642b95796"
         type: string
+      mailing_address:
+        allOf:
+        - $ref: '#/definitions/model.AddressInfo'
+        description: |-
+          Address Info of the Sub-Agency
+          Required: false
       name:
         description: |-
           Identifying name of the Sub-Agency.
@@ -33,6 +44,9 @@ definitions:
           Required: true
           Example: "123456"
         type: string
+    required:
+    - name
+    - npn
     type: object
   model.AgencyResponse:
     properties:
@@ -149,6 +163,10 @@ definitions:
         $ref: '#/definitions/model.GeneralLiabilityLimitOptions'
       tenants_improvements_betterments_limit:
         type: integer
+    required:
+    - all_perils_deductible
+    - business_personal_property_limit
+    - general_liability_limit
     type: object
   model.CoverageResponse:
     properties:
@@ -171,9 +189,9 @@ definitions:
   model.CreateQuoteIndicationRequest:
     properties:
       agent:
-        allOf:
-        - $ref: '#/definitions/model.IndicationAgent'
-        description: An object contains agent information
+        $ref: '#/definitions/model.IndicationAgent'
+      agent_id:
+        type: string
       answers:
         description: An array of objects, where each object represents an answer to
           a question from the appetite endpoint.
@@ -207,6 +225,17 @@ definitions:
         description: Optional, identifier of the sub-agency, if provided, the indication
           will be attributed to the sub-agency.
         type: string
+    required:
+    - policy_effective_date
+    - product_code
+    - product_version
+    type: object
+  model.CreateSubAgencyAgentRequest:
+    properties:
+      agent:
+        $ref: '#/definitions/model.IndicationAgent'
+    required:
+    - agent
     type: object
   model.GeneralLiabilityLimitOptions:
     enum:
@@ -226,6 +255,12 @@ definitions:
         type: string
       last_name:
         type: string
+      phone_number:
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
     type: object
   model.IndicationBusiness:
     properties:
@@ -237,6 +272,9 @@ definitions:
         type: string
       business_name:
         type: string
+    required:
+    - business_dba
+    - business_name
     type: object
   model.IndicationContact:
     properties:
@@ -248,6 +286,10 @@ definitions:
         type: string
       mailing_address:
         $ref: '#/definitions/model.AddressInfo'
+    required:
+    - email
+    - first_name
+    - last_name
     type: object
   model.LineItem:
     properties:
@@ -276,6 +318,10 @@ definitions:
     type: object
   model.QuoteIndicationResponseData:
     properties:
+      agent:
+        allOf:
+        - $ref: '#/definitions/model.SubAgencyAgentResponseData'
+        description: The agent tied to this quote
       business:
         allOf:
         - $ref: '#/definitions/model.IndicationBusiness'
@@ -319,6 +365,49 @@ definitions:
       timestamp:
         type: string
     type: object
+  model.SubAgencyAgentResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.SubAgencyAgentResponseData'
+      errors: {}
+      message:
+        type: string
+      status:
+        type: integer
+      timestamp:
+        type: string
+    type: object
+  model.SubAgencyAgentResponseData:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      phone_number:
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    type: object
+  model.SubAgencyAgentsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.SubAgencyAgentResponseData'
+        type: array
+      errors: {}
+      message:
+        type: string
+      status:
+        type: integer
+      timestamp:
+        type: string
+    type: object
   model.URLInfo:
     properties:
       expires_at:
@@ -342,6 +431,8 @@ definitions:
         type: string
       time:
         type: string
+    required:
+    - question_key
     type: object
   monolith_endpoint_partner_model.Question:
     properties:
@@ -591,6 +682,111 @@ paths:
       security:
       - ApiKeyAuthV1: []
       summary: Query Sub Agency by SubAgency ID
+      tags:
+      - Agency
+  /sub-agency/id/{SubAgencyID}/agent:
+    post:
+      consumes:
+      - application/json
+      description: The endpoint creates agents for the given sub agency.
+      parameters:
+      - description: The UUID of the Sub-Agency.
+        in: path
+        name: SubAgencyID
+        required: true
+        type: string
+      - description: Sub Agency Agent Create Request
+        in: body
+        name: request_body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateSubAgencyAgentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SubAgencyAgentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - ApiKeyAuthV1: []
+      summary: Create Agent by SubAgency ID
+      tags:
+      - Agency
+  /sub-agency/id/{SubAgencyID}/agent/id/{AgentID}:
+    get:
+      consumes:
+      - application/json
+      description: The endpoint return agent info for the given sub agency id and
+        agent id.
+      parameters:
+      - description: The UUID of the Sub-Agency.
+        in: path
+        name: SubAgencyID
+        required: true
+        type: string
+      - description: The UUID of the Agent.
+        in: path
+        name: AgentID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SubAgencyAgentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - ApiKeyAuthV1: []
+      summary: Get Sub Agency Agent By ID
+      tags:
+      - Agency
+  /sub-agency/id/{SubAgencyID}/agents:
+    get:
+      consumes:
+      - application/json
+      description: The endpoint return all agent info for the given sub agency id.
+      parameters:
+      - description: The UUID of the Sub-Agency.
+        in: path
+        name: SubAgencyID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SubAgencyAgentsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - ApiKeyAuthV1: []
+      summary: Get All Agents Under The Sub Agency
       tags:
       - Agency
   /sub-agency/npn/{NPN}:

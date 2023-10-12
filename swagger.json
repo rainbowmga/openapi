@@ -311,6 +311,169 @@
                 }
             }
         },
+        "/sub-agency/id/{SubAgencyID}/agent": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuthV1": []
+                    }
+                ],
+                "description": "The endpoint creates agents for the given sub agency.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Agency"
+                ],
+                "summary": "Create Agent by SubAgency ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The UUID of the Sub-Agency.",
+                        "name": "SubAgencyID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Sub Agency Agent Create Request",
+                        "name": "request_body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateSubAgencyAgentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.SubAgencyAgentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sub-agency/id/{SubAgencyID}/agent/id/{AgentID}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuthV1": []
+                    }
+                ],
+                "description": "The endpoint return agent info for the given sub agency id and agent id.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Agency"
+                ],
+                "summary": "Get Sub Agency Agent By ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The UUID of the Sub-Agency.",
+                        "name": "SubAgencyID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The UUID of the Agent.",
+                        "name": "AgentID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.SubAgencyAgentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sub-agency/id/{SubAgencyID}/agents": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuthV1": []
+                    }
+                ],
+                "description": "The endpoint return all agent info for the given sub agency id.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Agency"
+                ],
+                "summary": "Get All Agents Under The Sub Agency",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The UUID of the Sub-Agency.",
+                        "name": "SubAgencyID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.SubAgencyAgentsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/sub-agency/npn/{NPN}": {
             "get": {
                 "security": [
@@ -364,6 +527,12 @@
     "definitions": {
         "model.AddressInfo": {
             "type": "object",
+            "required": [
+                "address1",
+                "city",
+                "state",
+                "zip"
+            ],
             "properties": {
                 "address1": {
                     "type": "string"
@@ -384,10 +553,22 @@
         },
         "model.AgencyCreateRequest": {
             "type": "object",
+            "required": [
+                "name",
+                "npn"
+            ],
             "properties": {
                 "appointment_token": {
-                    "description": "A unique token the sub-agency can retrieve from their settings page. Providing this empowers the API user to create quote indications under the sub-agency’s identity.\nRequired: true\nExample: \"018a056a-0eda-9157-6cb4-d10642b95796\"",
+                    "description": "A unique token the sub-agency can retrieve from their settings page. Providing this empowers the API user to create quote indications under the sub-agency’s identity.\nRequired: false\nExample: \"018a056a-0eda-9157-6cb4-d10642b95796\"",
                     "type": "string"
+                },
+                "mailing_address": {
+                    "description": "Address Info of the Sub-Agency\nRequired: false",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AddressInfo"
+                        }
+                    ]
                 },
                 "name": {
                     "description": "Identifying name of the Sub-Agency.\nRequired: true\nExample: \"Sub Agency 101\"",
@@ -520,6 +701,11 @@
         },
         "model.CoverageRequest": {
             "type": "object",
+            "required": [
+                "all_perils_deductible",
+                "business_personal_property_limit",
+                "general_liability_limit"
+            ],
             "properties": {
                 "all_perils_deductible": {
                     "$ref": "#/definitions/model.AllPerilsDeductibleOptions"
@@ -568,14 +754,17 @@
         },
         "model.CreateQuoteIndicationRequest": {
             "type": "object",
+            "required": [
+                "policy_effective_date",
+                "product_code",
+                "product_version"
+            ],
             "properties": {
                 "agent": {
-                    "description": "An object contains agent information",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.IndicationAgent"
-                        }
-                    ]
+                    "$ref": "#/definitions/model.IndicationAgent"
+                },
+                "agent_id": {
+                    "type": "string"
                 },
                 "answers": {
                     "description": "An array of objects, where each object represents an answer to a question from the appetite endpoint.",
@@ -630,6 +819,17 @@
                 }
             }
         },
+        "model.CreateSubAgencyAgentRequest": {
+            "type": "object",
+            "required": [
+                "agent"
+            ],
+            "properties": {
+                "agent": {
+                    "$ref": "#/definitions/model.IndicationAgent"
+                }
+            }
+        },
         "model.GeneralLiabilityLimitOptions": {
             "type": "string",
             "enum": [
@@ -645,6 +845,11 @@
         },
         "model.IndicationAgent": {
             "type": "object",
+            "required": [
+                "email",
+                "first_name",
+                "last_name"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
@@ -654,11 +859,18 @@
                 },
                 "last_name": {
                     "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
                 }
             }
         },
         "model.IndicationBusiness": {
             "type": "object",
+            "required": [
+                "business_dba",
+                "business_name"
+            ],
             "properties": {
                 "business_addresses": {
                     "type": "array",
@@ -676,6 +888,11 @@
         },
         "model.IndicationContact": {
             "type": "object",
+            "required": [
+                "email",
+                "first_name",
+                "last_name"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
@@ -732,6 +949,14 @@
         "model.QuoteIndicationResponseData": {
             "type": "object",
             "properties": {
+                "agent": {
+                    "description": "The agent tied to this quote",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.SubAgencyAgentResponseData"
+                        }
+                    ]
+                },
                 "business": {
                     "description": "This object contains information about the business associated with the application.",
                     "allOf": [
@@ -797,6 +1022,70 @@
                 }
             }
         },
+        "model.SubAgencyAgentResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.SubAgencyAgentResponseData"
+                },
+                "errors": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SubAgencyAgentResponseData": {
+            "type": "object",
+            "required": [
+                "email",
+                "first_name",
+                "last_name"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SubAgencyAgentsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SubAgencyAgentResponseData"
+                    }
+                },
+                "errors": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
         "model.URLInfo": {
             "type": "object",
             "properties": {
@@ -810,6 +1099,9 @@
         },
         "monolith_endpoint_partner_model.Answer": {
             "type": "object",
+            "required": [
+                "question_key"
+            ],
             "properties": {
                 "boolean": {
                     "type": "boolean"
