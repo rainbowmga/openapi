@@ -138,7 +138,7 @@ const docTemplate = `{
                 "summary": "Create Indication",
                 "parameters": [
                     {
-                        "description": "Create BOPQuoteApplication Request",
+                        "description": "Create Application Request",
                         "name": "request_body",
                         "in": "body",
                         "required": true,
@@ -566,7 +566,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "appointment_token": {
-                    "description": "A unique token the sub-agency can retrieve from their settings page. Providing this empowers the API user to create quote indications under the sub-agency’s identity.\nRequired: false\nExample: \"018a056a-0eda-9157-6cb4-d10642b95796\"",
+                    "description": "A unique token agent users of the sub-agency can retrieve from their Settings page within the Rainbow portal.\nAn API user should request this from the sub-agency users IF they are acting as a technology vendor, and all\ncommissions are to be paid directly to the sub-agency.\nRequired: false\nExample: \"018a056a-0eda-9157-6cb4-d10642b95796\"",
                     "type": "string"
                 },
                 "mailing_address": {
@@ -875,12 +875,12 @@ const docTemplate = `{
         "model.IndicationBusiness": {
             "type": "object",
             "required": [
-                "business_dba",
                 "business_name"
             ],
             "properties": {
                 "business_addresses": {
                     "type": "array",
+                    "minItems": 1,
                     "items": {
                         "$ref": "#/definitions/model.AddressInfo"
                     }
@@ -1219,6 +1219,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "Rainbow Open API is currently in preview for selected insurance partners.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

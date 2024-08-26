@@ -22,7 +22,9 @@ definitions:
     properties:
       appointment_token:
         description: |-
-          A unique token the sub-agency can retrieve from their settings page. Providing this empowers the API user to create quote indications under the sub-agency’s identity.
+          A unique token agent users of the sub-agency can retrieve from their Settings page within the Rainbow portal.
+          An API user should request this from the sub-agency users IF they are acting as a technology vendor, and all
+          commissions are to be paid directly to the sub-agency.
           Required: false
           Example: "018a056a-0eda-9157-6cb4-d10642b95796"
         type: string
@@ -267,13 +269,13 @@ definitions:
       business_addresses:
         items:
           $ref: '#/definitions/model.AddressInfo'
+        minItems: 1
         type: array
       business_dba:
         type: string
       business_name:
         type: string
     required:
-    - business_dba
     - business_name
     type: object
   model.IndicationContact:
@@ -286,6 +288,8 @@ definitions:
         type: string
       mailing_address:
         $ref: '#/definitions/model.AddressInfo'
+      phone_number:
+        type: string
     required:
     - email
     - first_name
