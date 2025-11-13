@@ -118,7 +118,7 @@
                         "ApiKeyAuthV1": []
                     }
                 ],
-                "description": "Use the endpoint to create a quote indication based on submitted answers.",
+                "description": "Use the endpoint to create an Indication. *Note* the url provided in the quote will enables the agent to log in without a sign in step to the rainbow platform. As a result, to keep these links secure, it will expire within a few days. If you need a refreshed url please use the \"Query by Indication ID\" endpoint to query the indication again this will provide a new url with a refreshed expiration date.",
                 "consumes": [
                     "application/json"
                 ],
@@ -169,7 +169,7 @@
                         "ApiKeyAuthV1": []
                     }
                 ],
-                "description": "Use the endpoint to fetch the created quote indication based on an Indication ID.",
+                "description": "Use the endpoint to fetch the created quote indication based on an Indication ID. This endpoint will also give you a refreshed quote url so you may use it to get a new url if your previous has expired.",
                 "consumes": [
                     "application/json"
                 ],
@@ -269,7 +269,7 @@
                         "ApiKeyAuthV1": []
                     }
                 ],
-                "description": "The endpoint fetches a sub-agency’s information based on its unique ID.",
+                "description": "The endpoint fetches a sub-agency's information based on its unique ID.",
                 "consumes": [
                     "application/json"
                 ],
@@ -495,7 +495,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "The sub-agency’s National Producer Number.",
+                        "description": "The sub-agency's National Producer Number.",
                         "name": "NPN",
                         "in": "path",
                         "required": true
@@ -798,7 +798,7 @@
                     ]
                 },
                 "policy_effective_date": {
-                    "description": "The effective date for the policy",
+                    "description": "The effective date for the policy, must be in RFC3339 format or YYYY-MM-DD.",
                     "type": "string"
                 },
                 "product_code": {
@@ -1093,9 +1093,11 @@
             "type": "object",
             "properties": {
                 "expires_at": {
+                    "description": "the time at which this url will expire. Please refetch the quote indication if this has expired.",
                     "type": "string"
                 },
                 "url": {
+                    "description": "The pre-authed URL into the rainbow dashboard for your agent to complete the quote with.",
                     "type": "string"
                 }
             }
@@ -1161,7 +1163,7 @@
             "type": "object",
             "properties": {
                 "application_url": {
-                    "description": "The URL to complete the application.",
+                    "description": "The URL to complete the application. *Note* this will expire please refetch the data if it expires.",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.URLInfo"
